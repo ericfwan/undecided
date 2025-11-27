@@ -1,0 +1,23 @@
+# Build folders
+/build/
+/cmake-build-debug/
+/cmake-build-release/
+
+# OS garbage
+.DS_Store
+Thumbs.db
+
+# IDE garbage
+.vscode/
+.idea/
+
+# Binary files
+*.exe
+*.dll
+*.so
+*.dylib
+*.o
+*.obj
+
+# SFML build folders
+extlibs/
