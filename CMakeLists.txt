@@ -1,21 +1,14 @@
-cmake_minimum_required(VERSION 3.16)
-project(Undecided)
+cmake_minimum_required(VERSION 3.18)
+project(Undecided LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Absolute path to the actual SFML 2.6.2 config directory
-set(SFML_DIR "/opt/homebrew/Cellar/sfml@2/2.6.2_1/lib/cmake/SFML")
+find_package(SFML 2 COMPONENTS system window graphics audio REQUIRED)
 
-# Add this so CMake searches the folder
-set(CMAKE_PREFIX_PATH "/opt/homebrew/Cellar/sfml@2/2.6.2_1")
-
-# Add source and include directories
 include_directories(include)
-file(GLOB_RECURSE SOURCES src/*.cpp)
 
-# Find SFML 2.6 components
-find_package(SFML 2.6 COMPONENTS system window graphics audio REQUIRED)
+file(GLOB SRC "src/*.cpp")
+add_executable(Undecided ${SRC})
 
-add_executable(Undecided ${SOURCES})
-
-target_link_libraries(Undecided sfml-system sfml-window sfml-graphics sfml-audio)
+target_link_libraries(Undecided PRIVATE sfml-system sfml-window sfml-graphics sfml-audio)

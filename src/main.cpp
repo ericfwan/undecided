@@ -1,35 +1,41 @@
 #include <SFML/Graphics.hpp>
-#include "SceneManager.hpp"
+#include <iostream>
+#include "LevelMap.h"
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Undecided");
+    const unsigned int WINDOW_W = 800;
+    const unsigned int WINDOW_H = 600;
+
+    sf::RenderWindow window(sf::VideoMode(WINDOW_W, WINDOW_H), "Undecided - Level Designer (SFML)");
     window.setFramerateLimit(60);
 
-    SceneManager sceneManager;
+    sf::Texture tileset;
+    if(!tileset.loadFromFile("assets/tiles.png")) {
+        std::cerr << "Warning: assets/tiles.png not found. Using empty tileset." << std::endl;
+    }
 
-    // temporary; no scene yet
-    // add MenuScene next
+    LevelMap level;
+    level.setTileSize(32, 32);
+    bool ok = level.loadFromCSV("assets/levels/level1.csv");
+    if(!ok) std::cerr << "Warning: level CSV not found or empty (assets/levels/level1.csv)" << std::endl;
 
-    sf::Clock clock;
-
-    while (window.isOpen()) {
-        float dt = clock.restart().asSeconds();
-
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
-                window.close();
-
-            if (sceneManager.current())
-                sceneManager.current()->handleEvent(event);
+    while(window.isOpen()) {
+        sf::Event ev;
+        while(window.pollEvent(ev)) {
+            if(ev.type == sf::Event::Closed) window.close();
         }
 
-        if (sceneManager.current())
-            sceneManager.current()->update(dt);
+        window.clear(sf::Color(15,15,30));
 
-        window.clear();
-        if (sceneManager.current())
-            sceneManager.current()->draw(window);
+        level.draw(window, tileset);
+
+        sf::Font font;
+        if(font.loadFromFile("assets/fonts/arial.ttf")) {
+            sf::Text t("Undecided - Level Preview", font, 14);
+            t.setPosition(8.f, 8.f);
+            window.draw(t);
+        }
+
         window.display();
     }
 
