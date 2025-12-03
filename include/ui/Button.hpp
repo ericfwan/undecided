@@ -9,7 +9,7 @@ public:
     void setPosition(float x, float y);
     void setColors(sf::Color normal, sf::Color hover);
     void setOutline(float thickness, sf::Color color);
-    
+
     bool isHovered(sf::RenderWindow& window);
     bool isClicked(sf::RenderWindow& window);
 
@@ -24,4 +24,8 @@ private:
     sf::Color hoverColor;
 
     bool hovered = false;
+
+    // Animation
+    float pulseTime = 0.f;
+    float hoverScale = 1.f;
 };

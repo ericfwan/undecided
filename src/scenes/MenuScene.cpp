@@ -1,56 +1,95 @@
 #include "scenes/MenuScene.hpp"
-#include <iostream> // temp logging
+#include "scenes/GameScene.hpp"
+#include "config.hpp"
+#include <iostream>
 
 MenuScene::MenuScene(sf::RenderWindow& window, SceneManager& manager)
-    : sceneManager(manager)
+    : Scene(window), sceneManager(manager)
 {
-    font.loadFromFile("assets/fonts/arial.ttf"); // temporary
+    font.loadFromFile("assets/fonts/RobotoMono-Regular.ttf");
 
-    // Create Buttons
-    playButton = new Button(font, "PLAY", 32);
-    optionsButton = new Button(font, "OPTIONS", 32);
-    exitButton = new Button(font, "EXIT", 32);
+    background.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
+    background.setFillColor(Style::Background);
 
-    // Position them
-    playButton->setPosition(280, 200);
-    optionsButton->setPosition(280, 260);
-    exitButton->setPosition(280, 320);
+    const int lineCount = 10;
+    for (int i = 0; i < lineCount; i++) {
+        sf::RectangleShape line;
+        line.setSize({2.f, (float)window.getSize().y});
 
-    // Neon colours (cyan + magenta)
-    playButton->setColors(sf::Color(0,255,255), sf::Color(255,0,255));
-    optionsButton->setColors(sf::Color(0,255,255), sf::Color(255,0,255));
-    exitButton->setColors(sf::Color(0,255,255), sf::Color(255,0,255));
+        float x = 50.f + i * 70.f;
+        line.setPosition(x, 0);
 
-    playButton->setOutline(3, sf::Color(0,255,255));
-    optionsButton->setOutline(3, sf::Color(0,255,255));
-    exitButton->setOutline(3, sf::Color(0,255,255));
+        line.setFillColor(sf::Color(0, 255, 255, 70 + rand() % 120));
+
+        neonLines.push_back(line);
+        neonSpeeds.push_back(20.f + rand() % 40);
+    }
+
+    title.setFont(font);
+    title.setString("UNDECIDED");
+    title.setCharacterSize(Style::TitleFontSize);
+    title.setFillColor(Style::NeonCyan);
+
+    sf::FloatRect t = title.getLocalBounds();
+    title.setOrigin(t.width / 2, t.height / 2);
+    title.setPosition(window.getSize().x / 2, 120);
+
+    playButton = new Button(font, "PLAY", Style::ButtonFontSize);
+    optionsButton = new Button(font, "OPTIONS", Style::ButtonFontSize);
+    exitButton = new Button(font, "EXIT", Style::ButtonFontSize);
+
+    float cx = window.getSize().x / 2 - 100;
+
+    playButton->setPosition(cx, 220);
+    optionsButton->setPosition(cx, 220 + Style::ButtonSpacing);
+    exitButton->setPosition(cx, 220 + 2 * Style::ButtonSpacing);
+
+    playButton->setColors(Style::NeonCyan, Style::NeonMagenta);
+    optionsButton->setColors(Style::NeonCyan, Style::NeonMagenta);
+    exitButton->setColors(Style::NeonCyan, Style::NeonMagenta);
+
+    playButton->setOutline(Style::ButtonOutlineThickness, Style::NeonCyan);
+    optionsButton->setOutline(Style::ButtonOutlineThickness, Style::NeonCyan);
+    exitButton->setOutline(Style::ButtonOutlineThickness, Style::NeonCyan);
 }
 
 void MenuScene::handleEvent(sf::Event& event) {
-    // no click event needed here (click detection inside update)
 }
 
 void MenuScene::update(float dt) {
-    // Hover animations
-    playButton->update(*sceneManager.current()->window); // this line needs window reference
-    optionsButton->update(*sceneManager.current()->window);
-    exitButton->update(*sceneManager.current()->window);
+    for (int i = 0; i < neonLines.size(); i++) {
+        neonLines[i].move(neonSpeeds[i] * dt, 0);
 
-    // Click detection
-    if (playButton->isClicked(*sceneManager.current()->window)) {
-        std::cout << "PLAY clicked\n";
-        // TODO: switch to GameScene
+        if (neonLines[i].getPosition().x > window.getSize().x)
+            neonLines[i].setPosition(-20, 0);
     }
-    if (optionsButton->isClicked(*sceneManager.current()->window)) {
+
+    playButton->update(window);
+    optionsButton->update(window);
+    exitButton->update(window);
+
+    if (playButton->isClicked(window)) {
+        std::cout << "Switching to GameScene...\n";
+        sceneManager.push(std::make_unique<GameScene>(window, sceneManager));
+    }
+
+    if (optionsButton->isClicked(window)) {
         std::cout << "OPTIONS clicked\n";
     }
-    if (exitButton->isClicked(*sceneManager.current()->window)) {
-        std::cout << "EXIT clicked\n";
-        exit(0);
+
+    if (exitButton->isClicked(window)) {
+        window.close();
     }
 }
 
 void MenuScene::draw(sf::RenderWindow& window) {
+    window.draw(background);
+
+    for (auto& line : neonLines)
+        window.draw(line);
+
+    window.draw(title);
+
     playButton->draw(window);
     optionsButton->draw(window);
     exitButton->draw(window);

@@ -1,5 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include "SceneManager.hpp"
+#include "scenes/MenuScene.hpp"
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Undecided");
@@ -7,8 +8,8 @@ int main() {
 
     SceneManager sceneManager;
 
-    // temporary; no scene yet
-    // add MenuScene next
+    // LOAD THE MENU SCENE
+    sceneManager.push(std::make_unique<MenuScene>(window, sceneManager));
 
     sf::Clock clock;
 

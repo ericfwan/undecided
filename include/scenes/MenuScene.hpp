@@ -1,5 +1,6 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+#include <vector>
 #include "Scene.hpp"
 #include "SceneManager.hpp"
 #include "ui/Button.hpp"
@@ -14,9 +15,20 @@ public:
 
 private:
     SceneManager& sceneManager;
+
+    // Background
+    sf::RectangleShape background;
+
+    // Title
+    sf::Text title;
     sf::Font font;
 
+    // Buttons
     Button* playButton;
     Button* optionsButton;
     Button* exitButton;
+
+    // NEON LINES (THE ONES YOU WERE MISSING)
+    std::vector<sf::RectangleShape> neonLines;
+    std::vector<float> neonSpeeds;
 };
