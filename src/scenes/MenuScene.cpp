@@ -1,56 +1,58 @@
 #include "scenes/MenuScene.hpp"
-#include <iostream> // temp logging
+#include "scenes/GameScene.hpp"
+#include "ui/FontManager.hpp"
+#include "config.hpp"
+#include <iostream>
 
 MenuScene::MenuScene(sf::RenderWindow& window, SceneManager& manager)
-    : sceneManager(manager)
+    : Scene(window), sceneManager(manager), neon(window)
 {
-    font.loadFromFile("assets/fonts/arial.ttf"); // temporary
+    // Title
+    title.setFont(FontManager::get());
+    title.setString("UNDECIDED");
+    title.setCharacterSize(64);
+    title.setFillColor(sf::Color::Cyan);
 
-    // Create Buttons
-    playButton = new Button(font, "PLAY", 32);
-    optionsButton = new Button(font, "OPTIONS", 32);
-    exitButton = new Button(font, "EXIT", 32);
+    sf::FloatRect b = title.getLocalBounds();
+    title.setOrigin(b.width / 2, b.height / 2);
+    title.setPosition(window.getSize().x / 2, 120);
 
-    // Position them
-    playButton->setPosition(280, 200);
-    optionsButton->setPosition(280, 260);
-    exitButton->setPosition(280, 320);
+    // Buttons
+    playButton = new Button("PLAY", 32);
+    optionsButton = new Button("OPTIONS", 32);
+    exitButton = new Button("EXIT", 32);
 
-    // Neon colours (cyan + magenta)
-    playButton->setColors(sf::Color(0,255,255), sf::Color(255,0,255));
-    optionsButton->setColors(sf::Color(0,255,255), sf::Color(255,0,255));
-    exitButton->setColors(sf::Color(0,255,255), sf::Color(255,0,255));
+    float cx = window.getSize().x / 2 - 100;
+    float cy = 240;
 
-    playButton->setOutline(3, sf::Color(0,255,255));
-    optionsButton->setOutline(3, sf::Color(0,255,255));
-    exitButton->setOutline(3, sf::Color(0,255,255));
+    playButton->setPosition(cx, cy);
+    optionsButton->setPosition(cx, cy + 60);
+    exitButton->setPosition(cx, cy + 120);
 }
 
-void MenuScene::handleEvent(sf::Event& event) {
-    // no click event needed here (click detection inside update)
-}
+void MenuScene::handleEvent(sf::Event& event) {}
 
 void MenuScene::update(float dt) {
-    // Hover animations
-    playButton->update(*sceneManager.current()->window); // this line needs window reference
-    optionsButton->update(*sceneManager.current()->window);
-    exitButton->update(*sceneManager.current()->window);
+    neon.update(dt, window);
 
-    // Click detection
-    if (playButton->isClicked(*sceneManager.current()->window)) {
-        std::cout << "PLAY clicked\n";
-        // TODO: switch to GameScene
+    playButton->update(window);
+    optionsButton->update(window);
+    exitButton->update(window);
+
+    if (playButton->isClicked(window)) {
+        std::cout << "Switching to GameScene...\n";
+        sceneManager.push(std::make_unique<GameScene>(window, sceneManager));
     }
-    if (optionsButton->isClicked(*sceneManager.current()->window)) {
-        std::cout << "OPTIONS clicked\n";
-    }
-    if (exitButton->isClicked(*sceneManager.current()->window)) {
-        std::cout << "EXIT clicked\n";
-        exit(0);
+
+    if (exitButton->isClicked(window)) {
+        window.close();
     }
 }
 
 void MenuScene::draw(sf::RenderWindow& window) {
+    neon.draw(window);
+    window.draw(title);
+
     playButton->draw(window);
     optionsButton->draw(window);
     exitButton->draw(window);

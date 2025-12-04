@@ -3,11 +3,10 @@
 #include "SceneManager.hpp"
 #include "ui/Button.hpp"
 #include "ui/NeonBackground.hpp"
-#include <SFML/Graphics.hpp>
 
-class MenuScene : public Scene {
+class GameOverScene : public Scene {
 public:
-    MenuScene(sf::RenderWindow& window, SceneManager& manager);
+    GameOverScene(sf::RenderWindow& window, SceneManager& manager, int score);
 
     void handleEvent(sf::Event& event) override;
     void update(float dt) override;
@@ -17,8 +16,9 @@ private:
     SceneManager& sceneManager;
     NeonBackground neon;
 
-    sf::Text title;
-    Button* playButton;
-    Button* optionsButton;
-    Button* exitButton;
+    sf::Text gameOverText;
+    sf::Text scoreText;
+
+    Button* retryButton;
+    Button* menuButton;
 };
