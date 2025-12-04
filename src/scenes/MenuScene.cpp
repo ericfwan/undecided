@@ -1,68 +1,39 @@
 #include "scenes/MenuScene.hpp"
 #include "scenes/GameScene.hpp"
+#include "ui/FontManager.hpp"
 #include "config.hpp"
 #include <iostream>
 
 MenuScene::MenuScene(sf::RenderWindow& window, SceneManager& manager)
-    : Scene(window), sceneManager(manager)
+    : Scene(window), sceneManager(manager), neon(window)
 {
-    font.loadFromFile("assets/fonts/RobotoMono-Regular.ttf");
-
-    background.setSize(sf::Vector2f(window.getSize().x, window.getSize().y));
-    background.setFillColor(Style::Background);
-
-    const int lineCount = 10;
-    for (int i = 0; i < lineCount; i++) {
-        sf::RectangleShape line;
-        line.setSize({2.f, (float)window.getSize().y});
-
-        float x = 50.f + i * 70.f;
-        line.setPosition(x, 0);
-
-        line.setFillColor(sf::Color(0, 255, 255, 70 + rand() % 120));
-
-        neonLines.push_back(line);
-        neonSpeeds.push_back(20.f + rand() % 40);
-    }
-
-    title.setFont(font);
+    // Title
+    title.setFont(FontManager::get());
     title.setString("UNDECIDED");
-    title.setCharacterSize(Style::TitleFontSize);
-    title.setFillColor(Style::NeonCyan);
+    title.setCharacterSize(64);
+    title.setFillColor(sf::Color::Cyan);
 
-    sf::FloatRect t = title.getLocalBounds();
-    title.setOrigin(t.width / 2, t.height / 2);
+    sf::FloatRect b = title.getLocalBounds();
+    title.setOrigin(b.width / 2, b.height / 2);
     title.setPosition(window.getSize().x / 2, 120);
 
-    playButton = new Button(font, "PLAY", Style::ButtonFontSize);
-    optionsButton = new Button(font, "OPTIONS", Style::ButtonFontSize);
-    exitButton = new Button(font, "EXIT", Style::ButtonFontSize);
+    // Buttons
+    playButton = new Button("PLAY", 32);
+    optionsButton = new Button("OPTIONS", 32);
+    exitButton = new Button("EXIT", 32);
 
     float cx = window.getSize().x / 2 - 100;
+    float cy = 240;
 
-    playButton->setPosition(cx, 220);
-    optionsButton->setPosition(cx, 220 + Style::ButtonSpacing);
-    exitButton->setPosition(cx, 220 + 2 * Style::ButtonSpacing);
-
-    playButton->setColors(Style::NeonCyan, Style::NeonMagenta);
-    optionsButton->setColors(Style::NeonCyan, Style::NeonMagenta);
-    exitButton->setColors(Style::NeonCyan, Style::NeonMagenta);
-
-    playButton->setOutline(Style::ButtonOutlineThickness, Style::NeonCyan);
-    optionsButton->setOutline(Style::ButtonOutlineThickness, Style::NeonCyan);
-    exitButton->setOutline(Style::ButtonOutlineThickness, Style::NeonCyan);
+    playButton->setPosition(cx, cy);
+    optionsButton->setPosition(cx, cy + 60);
+    exitButton->setPosition(cx, cy + 120);
 }
 
-void MenuScene::handleEvent(sf::Event& event) {
-}
+void MenuScene::handleEvent(sf::Event& event) {}
 
 void MenuScene::update(float dt) {
-    for (int i = 0; i < neonLines.size(); i++) {
-        neonLines[i].move(neonSpeeds[i] * dt, 0);
-
-        if (neonLines[i].getPosition().x > window.getSize().x)
-            neonLines[i].setPosition(-20, 0);
-    }
+    neon.update(dt, window);
 
     playButton->update(window);
     optionsButton->update(window);
@@ -73,21 +44,13 @@ void MenuScene::update(float dt) {
         sceneManager.push(std::make_unique<GameScene>(window, sceneManager));
     }
 
-    if (optionsButton->isClicked(window)) {
-        std::cout << "OPTIONS clicked\n";
-    }
-
     if (exitButton->isClicked(window)) {
         window.close();
     }
 }
 
 void MenuScene::draw(sf::RenderWindow& window) {
-    window.draw(background);
-
-    for (auto& line : neonLines)
-        window.draw(line);
-
+    neon.draw(window);
     window.draw(title);
 
     playButton->draw(window);

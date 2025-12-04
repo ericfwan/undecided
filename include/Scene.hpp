@@ -1,9 +1,11 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
+class SceneManager;
+
 class Scene {
 public:
-    Scene(sf::RenderWindow& win) : window(win) {}
+    Scene(sf::RenderWindow& window) : window(window) {}
     virtual ~Scene() = default;
 
     virtual void handleEvent(sf::Event& event) = 0;

@@ -1,7 +1,8 @@
 #pragma once
 #include "Scene.hpp"
 #include "SceneManager.hpp"
-#include <SFML/Graphics.hpp>
+#include "ui/Button.hpp"
+#include "ui/NeonBackground.hpp"
 
 class PauseScene : public Scene {
 public:
@@ -13,8 +14,9 @@ public:
 
 private:
     SceneManager& sceneManager;
+    NeonBackground neon;
 
-    sf::RectangleShape darkOverlay;
-    sf::Text title;
-    sf::Font font;
+    sf::Text pausedText;
+    Button* resumeButton;
+    Button* menuButton;
 };

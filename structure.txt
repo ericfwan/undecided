@@ -1,0 +1,30 @@
+.
+├── assets
+│   └── README.md
+├── CMakeLists.txt
+├── include
+│   ├── config.hpp
+│   ├── Game.hpp
+│   ├── Scene.hpp
+│   ├── SceneManager.hpp
+│   ├── scenes
+│   │   └── MenuScene.hpp
+│   └── ui
+│       └── Button.hpp
+├── LICENSE
+├── README.md
+├── src
+│   ├── Game.cpp
+│   ├── main.cpp
+│   ├── SceneManager.cpp
+│   ├── scenes
+│   │   ├── GameOverScene.cpp
+│   │   ├── GameScene.cpp
+│   │   ├── MenuScene.cpp
+│   │   └── PauseScene.cpp
+│   └── ui
+│       ├── Button.cpp
+│       └── HUD.cpp
+└── structure.txt
+
+8 directories, 20 files

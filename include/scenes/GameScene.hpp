@@ -1,8 +1,8 @@
 #pragma once
-
-#include <SFML/Graphics.hpp>
 #include "Scene.hpp"
 #include "SceneManager.hpp"
+#include "ui/HUD.hpp"
+#include "ui/NeonBackground.hpp"
 
 class GameScene : public Scene {
 public:
@@ -14,7 +14,8 @@ public:
 
 private:
     SceneManager& sceneManager;
+    NeonBackground neon;
+    HUD hud;
 
-    // TEMP visible object
-    sf::CircleShape circle;
+    sf::Text label;
 };

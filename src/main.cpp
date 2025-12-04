@@ -1,10 +1,15 @@
 #include <SFML/Graphics.hpp>
 #include "SceneManager.hpp"
 #include "scenes/MenuScene.hpp"
+#include "ui/SoundBank.hpp"
+
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "Undecided");
     window.setFramerateLimit(60);
+    SoundBank::get().load("click", "assets/sfx/click.wav");
+
+
 
     SceneManager sceneManager;
 

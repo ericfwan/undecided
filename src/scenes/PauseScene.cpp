@@ -1,43 +1,46 @@
 #include "scenes/PauseScene.hpp"
-#include "config.hpp"
+#include "ui/FontManager.hpp"
 #include <iostream>
 
 PauseScene::PauseScene(sf::RenderWindow& window, SceneManager& manager)
-    : Scene(window), sceneManager(manager)
+    : Scene(window), sceneManager(manager), neon(window)
 {
-    font.loadFromFile("assets/fonts/RobotoMono-Regular.ttf");
+    pausedText.setFont(FontManager::get());
+    pausedText.setString("PAUSED");
+    pausedText.setCharacterSize(48);
+    pausedText.setFillColor(sf::Color::Yellow);
 
-    // Semi-transparent overlay
-    darkOverlay.setSize({ (float)window.getSize().x, (float)window.getSize().y });
-    darkOverlay.setFillColor(sf::Color(0, 0, 0, 150));
+    sf::FloatRect b = pausedText.getLocalBounds();
+    pausedText.setOrigin(b.width / 2, b.height / 2);
+    pausedText.setPosition(window.getSize().x / 2, 120);
 
-    // Title text
-    title.setFont(font);
-    title.setString("PAUSED");
-    title.setCharacterSize(Style::TitleFontSize);
-    title.setFillColor(Style::NeonMagenta);
+    resumeButton = new Button("RESUME", 32);
+    menuButton = new Button("MENU", 32);
 
-    sf::FloatRect bounds = title.getLocalBounds();
-    title.setOrigin(bounds.width / 2, bounds.height / 2);
-    title.setPosition(window.getSize().x / 2, window.getSize().y / 2 - 40);
+    resumeButton->setPosition(window.getSize().x / 2 - 100, 250);
+    menuButton->setPosition(window.getSize().x / 2 - 100, 310);
 }
 
-void PauseScene::handleEvent(sf::Event& event) {
-    // ESC closes pause menu
-    if (event.type == sf::Event::KeyPressed) {
-        if (event.key.code == sf::Keyboard::Escape) {
-            std::cout << "Resuming game...\n";
-            sceneManager.pop();  // pop the pause scene
-        }
+void PauseScene::handleEvent(sf::Event& event) {}
+
+void PauseScene::update(float dt) {
+    neon.update(dt, window);
+
+    resumeButton->update(window);
+    menuButton->update(window);
+
+    if (resumeButton->isClicked(window)) {
+        sceneManager.pop();  // return to game
+    }
+
+    if (menuButton->isClicked(window)) {
+        sceneManager.clear();
     }
 }
 
-void PauseScene::update(float dt) {
-    // Pause scene doesn't need logic for now
-}
-
 void PauseScene::draw(sf::RenderWindow& window) {
-    // Draw overlay above the gameplay
-    window.draw(darkOverlay);
-    window.draw(title);
+    neon.draw(window);
+    window.draw(pausedText);
+    resumeButton->draw(window);
+    menuButton->draw(window);
 }
