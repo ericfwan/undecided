@@ -1,4 +1,4 @@
-# Project: Undecided (SFML 2.x + CMake)
+/**# Project: Undecided (SFML 2.x + CMake)
 
 This code tree is a starter template for your **Undecided** project using **SFML 2.x** and **CMake**. It contains a minimal working window, a simple tile-map loader, and CMake config tuned for Homebrew SFML (Apple Silicon). Drop your assets into the `assets/` folder and add levels as CSV files.
 
@@ -253,7 +253,7 @@ Author: David Akpan
 ---
 
 # Next steps
-- I have generated a complete starter project in the canvas (look in the editor panel).  
+- I have generated a complete starter project in the canvas (look in the editor panel).
 - Follow `build_instructions.txt` (or run the quick commands below) to compile and run.
 
 Quick build commands (run in project root):
