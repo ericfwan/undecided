@@ -1,14 +1,34 @@
-cmake_minimum_required(VERSION 3.18)
-project(Undecided LANGUAGES CXX)
+cmake_minimum_required(VERSION 3.16)
+project(Undecided)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(SFML 2 COMPONENTS system window graphics audio REQUIRED)
+# SFML (Homebrew path on Mac)
+set(SFML_DIR "/opt/homebrew/Cellar/sfml@2/2.6.2_1/lib/cmake/SFML")
+set(CMAKE_PREFIX_PATH "/opt/homebrew/Cellar/sfml@2/2.6.2_1")
 
 include_directories(include)
 
-file(GLOB SRC "src/*.cpp")
-add_executable(Undecided ${SRC})
+# Source files
+file(GLOB_RECURSE SOURCES
+    src/*.cpp
+    src/ui/*.cpp
+    src/scenes/*.cpp
+)
 
-target_link_libraries(Undecided PRIVATE sfml-system sfml-window sfml-graphics sfml-audio)
+# Copy assets into build directory
+file(COPY assets DESTINATION ${CMAKE_BINARY_DIR})
+
+# SFML
+find_package(SFML 2.6 COMPONENTS system window graphics audio REQUIRED)
+
+# Executable
+add_executable(Undecided ${SOURCES})
+
+# Link libraries
+target_link_libraries(Undecided
+    sfml-system
+    sfml-window
+    sfml-graphics
+    sfml-audio
+)
