@@ -1,14 +1,17 @@
 #include <SFML/Graphics.hpp>
 #include "SceneManager.hpp"
+#include "scenes/GameScene.hpp"
+#include "Scene.hpp"
+#include <memory>
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Undecided");
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Bouncing Ball");
     window.setFramerateLimit(60);
 
     SceneManager sceneManager;
 
-    // temporary; no scene yet
-    // add MenuScene next
+    // THIS LINE IS KEY - creates and adds the game scene!
+    sceneManager.push(std::make_unique<GameScene>());
 
     sf::Clock clock;
 
@@ -27,7 +30,7 @@ int main() {
         if (sceneManager.current())
             sceneManager.current()->update(dt);
 
-        window.clear();
+        window.clear(sf::Color(30, 30, 40));
         if (sceneManager.current())
             sceneManager.current()->draw(window);
         window.display();
