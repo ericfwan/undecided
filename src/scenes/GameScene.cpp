@@ -1,4 +1,4 @@
-#include "scenes/GameScene.hpp"
+ #include "scenes/GameScene.hpp"
 #include "Scene.hpp"
 #include <cmath>
 
