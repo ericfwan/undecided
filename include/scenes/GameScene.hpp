@@ -1,4 +1,13 @@
 #pragma once
+#include "Scene.hpp"
+#include "SceneManager.hpp"
+#include "ui/HUD.hpp"
+#include "ui/NeonBackground.hpp"
+
+class GameScene : public Scene {
+public:
+    GameScene(sf::RenderWindow& window, SceneManager& manager);
+
 #include <Scene.hpp>
 
 #include "scenes/GameScene.hpp"

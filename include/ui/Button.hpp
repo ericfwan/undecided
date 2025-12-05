@@ -4,16 +4,15 @@
 
 class Button {
 public:
-    Button(const sf::Font& font, const std::string& text, unsigned int size);
+    Button(const std::string& text, unsigned int size = 32);
 
     void setPosition(float x, float y);
     void setColors(sf::Color normal, sf::Color hover);
     void setOutline(float thickness, sf::Color color);
-    
-    bool isHovered(sf::RenderWindow& window);
-    bool isClicked(sf::RenderWindow& window);
 
     void update(sf::RenderWindow& window);
+    bool isClicked(sf::RenderWindow& window);
+
     void draw(sf::RenderWindow& window);
 
 private:

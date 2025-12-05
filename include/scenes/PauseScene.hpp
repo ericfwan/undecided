@@ -3,11 +3,10 @@
 #include "SceneManager.hpp"
 #include "ui/Button.hpp"
 #include "ui/NeonBackground.hpp"
-#include <SFML/Graphics.hpp>
 
-class MenuScene : public Scene {
+class PauseScene : public Scene {
 public:
-    MenuScene(sf::RenderWindow& window, SceneManager& manager);
+    PauseScene(sf::RenderWindow& window, SceneManager& manager);
 
     void handleEvent(sf::Event& event) override;
     void update(float dt) override;
@@ -17,8 +16,7 @@ private:
     SceneManager& sceneManager;
     NeonBackground neon;
 
-    sf::Text title;
-    Button* playButton;
-    Button* optionsButton;
-    Button* exitButton;
+    sf::Text pausedText;
+    Button* resumeButton;
+    Button* menuButton;
 };
