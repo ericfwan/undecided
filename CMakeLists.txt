@@ -21,7 +21,8 @@ link_directories("${CMAKE_BINARY_DIR}/lib/SFML/lib")
 
 file(GLOB_RECURSE SOURCES "src/*.cpp")
 file(GLOB_RECURSE INCLUDE "include/*.hpp")
-add_executable(undecided ${SOURCES} ${INCLUDE})
+add_executable(undecided ${SOURCES} ${INCLUDE}
+        src/scenes/SceneMAnager.cpp)
 target_include_directories(undecided PRIVATE
         ${SFML_INC}
         ${MY_INCLUDE})
