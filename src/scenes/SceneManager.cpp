@@ -16,7 +16,7 @@ void SceneManager::clear() {
     scenes.clear();
 }
 
-Scene* SceneManager::current() {
+Scene* SceneManager::current() const {
     if (scenes.empty()) return nullptr;
     return scenes.back().get();
 }

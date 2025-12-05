@@ -10,7 +10,7 @@ public:
     void push(std::unique_ptr<Scene> scene);
     void pop();
     void clear();
-    Scene* current();
+    Scene* current() const;
 
 private:
     std::vector<std::unique_ptr<Scene>> scenes;

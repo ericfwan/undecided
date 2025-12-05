@@ -1,15 +1,5 @@
 #pragma once
 #include "Scene.hpp"
-#include "SceneManager.hpp"
-#include "ui/HUD.hpp"
-#include "ui/NeonBackground.hpp"
-
-class GameScene : public Scene {
-public:
-    GameScene(sf::RenderWindow& window, SceneManager& manager);
-
-#include <Scene.hpp>
-
 #include "scenes/GameScene.hpp"
 #include <SFML/Graphics.hpp>
 
@@ -18,7 +8,7 @@ public:
     GameScene();
 
     float deltaTime;
-    void handleEvent(sf::Event& event) override;
+    void handleEvent(sf::Event& event, float dt);
     void update(float dt) override;
     void draw(sf::RenderWindow& window) override;
 
