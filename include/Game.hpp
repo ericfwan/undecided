@@ -1,10 +1,11 @@
 #pragma once
 #include <SFML/Graphics.hpp>
+
 #include "SceneManager.hpp"
 #include "ui/NeonBackground.hpp"
 
-// Central game context.
-// Owns the window, scene stack, and a few global settings shared across scenes.
+// Core game container.
+// Owns the window, global settings, background, and scene stack.
 class Game {
 public:
     Game();
@@ -14,10 +15,10 @@ public:
     SceneManager scenes;
     NeonBackground background;
 
-    // Runtime-configurable visual settings.
+    // Global visual settings updated by Options
     sf::Color ballColor = sf::Color::White;
     sf::Color neonColor = sf::Color::Cyan;
 
-    // Global SFX toggle (used by UI/menus).
+    // Global SFX toggle
     bool sfxEnabled = true;
 };

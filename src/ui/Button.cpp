@@ -81,9 +81,8 @@ void Button::centerText()
 
 void Button::handleEvent(const sf::Event& event, const sf::RenderWindow& window)
 {
-    (void)window; // Window not needed here, but kept in signature for consistency.
+    (void)window; 
 
-    // Start click only if mouse pressed within bounds.
     if (event.type == sf::Event::MouseButtonPressed &&
         event.mouseButton.button == sf::Mouse::Left)
     {
@@ -94,8 +93,6 @@ void Button::handleEvent(const sf::Event& event, const sf::RenderWindow& window)
         }
     }
 
-    // Complete click only if press started on the button
-    // and release also happens within bounds.
     if (event.type == sf::Event::MouseButtonReleased &&
         event.mouseButton.button == sf::Mouse::Left)
     {
@@ -111,7 +108,6 @@ void Button::handleEvent(const sf::Event& event, const sf::RenderWindow& window)
 
 void Button::update(const sf::RenderWindow& window)
 {
-    // Selected buttons keep their special outline style.
     if (selected) return;
 
     hovered = box.getGlobalBounds().contains(
@@ -122,11 +118,10 @@ void Button::update(const sf::RenderWindow& window)
                              : sf::Color(60, 60, 80));
 }
 
-// One-shot click read.
-// The scene reads this once; we reset immediately after.
+
 bool Button::isClicked(const sf::RenderWindow& window)
 {
-    (void)window; // Unused; click state is event-driven.
+    (void)window; 
 
     if (released) {
         released = false;

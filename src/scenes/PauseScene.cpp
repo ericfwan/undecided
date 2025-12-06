@@ -32,7 +32,7 @@ void PauseScene::handleEvent(sf::Event& event)
 {
     auto& w = game.window;
 
-    // ESC while paused should resume.
+    // ESC while paused should resume
     if (event.type == sf::Event::KeyPressed &&
         event.key.code == sf::Keyboard::Escape)
     {
@@ -53,27 +53,23 @@ void PauseScene::update(float dt)
     restartBtn.update(w);
     quitBtn.update(w);
 
-    // Resume: just remove the pause scene.
     if (resumeBtn.isClicked(w)) {
         game.scenes.pop();
         return;
     }
+    
+ if (restartBtn.isClicked(w)) {
+    game.scenes.requestReplaceRoot(std::make_unique<GameScene>(game));
+    return;
+}
 
-    // Restart: hard reset to a fresh GameScene.
-    // This avoids relying on fragile "pop twice" assumptions.
-    if (restartBtn.isClicked(w)) {
-        game.scenes.clear();
-        game.scenes.push(std::make_unique<GameScene>(game));
-        return;
-    }
+if (quitBtn.isClicked(w)) {
+    game.scenes.requestReplaceRoot(std::make_unique<MenuScene>(game));
+    return;
+}
 
-    // Quit: hard reset back to Menu.
-    // Clean, predictable, no stack ghosts.
-    if (quitBtn.isClicked(w)) {
-        game.scenes.clear();
-        game.scenes.push(std::make_unique<MenuScene>(game));
-        return;
-    }
+
+
 }
 
 void PauseScene::draw(sf::RenderWindow& window)

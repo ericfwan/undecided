@@ -31,17 +31,10 @@ GameScene::GameScene(Game& game)
 
 void GameScene::handleEvent(sf::Event& event) 
 {
-    // --------------------------------------------
-    // ESC -> Pause
-    // The Game loop sends events only to the top
-    // scene, so we trigger pause from gameplay.
-    // --------------------------------------------
     if (event.type == sf::Event::KeyPressed &&
         event.key.code == sf::Keyboard::Escape)
     {
-        // Push pause overlay on top of the game.
-        // When paused, GameScene won't receive events
-        // until PauseScene is popped.
+        
         game.scenes.push(std::make_unique<PauseScene>(game));
         return;
     }
@@ -109,7 +102,7 @@ void GameScene::handleWallCollision()
         ballVelocity.y = std::abs(ballVelocity.y);
     }
 
-    // Bottom (soft bounce)
+    // Bottom
     if (pos.y + r > windowHeight) {
         ball.setPosition(pos.x, windowHeight - r);
         ballVelocity.y = -std::abs(ballVelocity.y) * bounceFactor;
@@ -128,10 +121,8 @@ void GameScene::handlePlatformCollision()
     float right = pPos.x + pSize.x / 2.f;
     float top = pPos.y - pSize.y / 2.f;
 
-    // Check horizontal overlap
+   
     bool overPlatformX = pos.x + r > left && pos.x - r < right;
-
-    // Check vertical overlap (ball descending)
     bool hittingTop = pos.y + r > top && pos.y + r < top + 30.f;
     bool movingDown = ballVelocity.y > 0;
 

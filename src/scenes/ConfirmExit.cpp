@@ -41,13 +41,13 @@ void ConfirmExit::update(float dt)
     yesBtn.update(w);
     noBtn.update(w);
 
-    // Only close if YES was explicitly clicked.
+    // Only close if YES was explicitly clicked
     if (yesBtn.isClicked(w)) {
         game.window.close();
         return;
     }
 
-    // NO simply removes this overlay.
+    // NO simply removes this overlay
     if (noBtn.isClicked(w)) {
         game.scenes.pop();
         return;

@@ -3,8 +3,6 @@
 #include "ui/Button.hpp"
 #include <SFML/Graphics.hpp>
 
-// Simple confirmation overlay.
-// Should ONLY close the window when the user explicitly clicks YES.
 class ConfirmExit : public Scene {
 public:
     ConfirmExit(Game& game);

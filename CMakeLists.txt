@@ -5,10 +5,16 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # -------------------------------------------------------------
-# SFML (Homebrew installation)
+# SFML
+# Try normal discovery first, then fallback to Homebrew stable path.
 # -------------------------------------------------------------
-set(SFML_DIR "/opt/homebrew/Cellar/sfml@2/2.6.2_1/lib/cmake/SFML")
-find_package(SFML 2.6 COMPONENTS system window graphics audio REQUIRED)
+find_package(SFML 2.6 COMPONENTS system window graphics audio QUIET)
+
+if(NOT SFML_FOUND)
+    # Homebrew stable alias path (less version-fragile)
+    set(SFML_DIR "/opt/homebrew/opt/sfml@2/lib/cmake/SFML")
+    find_package(SFML 2.6 COMPONENTS system window graphics audio REQUIRED)
+endif()
 
 # -------------------------------------------------------------
 # Source files
@@ -34,10 +40,11 @@ target_link_libraries(undecided
 )
 
 # -------------------------------------------------------------
-# Copy assets folder to build directory after build
+# Copy assets next to the executable after build
+# This makes running from build/ reliable.
 # -------------------------------------------------------------
 add_custom_command(TARGET undecided POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/assets
-    ${CMAKE_CURRENT_BINARY_DIR}/assets
+            ${CMAKE_SOURCE_DIR}/assets
+            $<TARGET_FILE_DIR:undecided>/assets
 )

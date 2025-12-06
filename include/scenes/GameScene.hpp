@@ -27,7 +27,6 @@ private:
     float windowWidth;
     float windowHeight;
 
-    // Helpers
     void handleWallCollision();
     void handlePlatformCollision();
 };

@@ -1,4 +1,5 @@
 #include "ui/FontManager.hpp"
+#include <stdexcept>
 
 sf::Font FontManager::font;
 bool FontManager::loaded = false;

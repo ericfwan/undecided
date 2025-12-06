@@ -5,42 +5,47 @@
 
 class Game;
 
-// Simple stack-based scene manager.
-// The top scene is the active one for input/update/draw.
-// Use clear()+push() for hard transitions (e.g., Quit to Menu, Start Game).
+// SceneManager: stack-based scene controller
+// Includes a minimal deferred "replace root scene" mechanism so
+// we never destroy the active scene inside its own update()
 class SceneManager {
 public:
-    SceneManager(Game& game) : game(game) {}
+    explicit SceneManager(Game& game) : game(game) {}
 
-    // Push a scene onto the stack.
+    // Push overlay scenes (Pause, Options, ConfirmExit)
     void push(std::unique_ptr<Scene> scene) {
         stack.push_back(std::move(scene));
     }
 
-    // Remove the top-most scene.
+    // Pop top scene safely
     void pop() {
         if (!stack.empty())
             stack.pop_back();
     }
 
-    // Clear ALL scenes.
-    // Useful for safe resets / returning to menu.
-    void clear() {
-        stack.clear();
-    }
-
-    // Get the current scene (top of stack).
+    // Access current top scene
     Scene* current() {
         if (stack.empty()) return nullptr;
         return stack.back().get();
     }
 
-    // Helpful for debugging or guarded pops.
-    size_t size() const {
-        return stack.size();
+    size_t size() const { return stack.size(); }
+
+    void requestReplaceRoot(std::unique_ptr<Scene> scene) {
+        pendingReplaceRoot = std::move(scene);
+    }
+
+    // Apply deferred operation after update finishes
+    void applyPending() {
+        if (!pendingReplaceRoot) return;
+
+        stack.clear();
+        stack.push_back(std::move(pendingReplaceRoot));
     }
 
 private:
     Game& game;
     std::vector<std::unique_ptr<Scene>> stack;
+
+    std::unique_ptr<Scene> pendingReplaceRoot;
 };
