@@ -1,24 +1,20 @@
 #pragma once
 #include "Scene.hpp"
-#include "SceneManager.hpp"
 #include "ui/Button.hpp"
-#include "ui/NeonBackground.hpp"
 #include <SFML/Graphics.hpp>
 
 class MenuScene : public Scene {
 public:
-    MenuScene(sf::RenderWindow& window, SceneManager& manager);
+    MenuScene(Game& game);
 
     void handleEvent(sf::Event& event) override;
     void update(float dt) override;
-    void draw(sf::RenderWindow& window) override;
+   void draw(sf::RenderWindow& window) override;
 
 private:
-    SceneManager& sceneManager;
-    NeonBackground neon;
+    Button playButton;
+    Button optionsButton;
+    Button exitButton;
 
     sf::Text title;
-    Button* playButton;
-    Button* optionsButton;
-    Button* exitButton;
 };

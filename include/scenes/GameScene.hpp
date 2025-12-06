@@ -1,14 +1,12 @@
 #pragma once
 #include "Scene.hpp"
-#include "scenes/GameScene.hpp"
 #include <SFML/Graphics.hpp>
 
 class GameScene : public Scene {
 public:
-    GameScene();
+    GameScene(Game& game);
 
-    float deltaTime;
-    void handleEvent(sf::Event& event, float dt);
+    void handleEvent(sf::Event& event) override;
     void update(float dt) override;
     void draw(sf::RenderWindow& window) override;
 
@@ -25,11 +23,11 @@ private:
     float bounceFactor;
     float platformSpeed;
 
-    // Window bounds
+    // Window bounds (read once from Game)
     float windowWidth;
     float windowHeight;
 
-    // Helper functions
+    // Helpers
     void handleWallCollision();
     void handlePlatformCollision();
 };

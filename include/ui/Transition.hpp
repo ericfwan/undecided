@@ -3,22 +3,25 @@
 
 class Transition {
 public:
-    Transition(float duration = 0.7f);
+    Transition();
 
-    void startFadeIn();
-    void startFadeOut();
+    void startFadeIn(float duration = 0.6f);
+    void startFadeOut(float duration = 0.6f);
+
     void update(float dt);
     void draw(sf::RenderWindow& window);
 
-    bool isFinished() const { return finished; }
+    bool isActive() const { return active; }
+    bool isFinished() const;
 
 private:
-    enum State { None, FadeIn, FadeOut };
-    State state = None;
-
     float timer = 0.f;
-    float duration;
-    bool finished = true;
+    float duration = 0.6f;
+    float alpha = 255.f;
+
+    bool fadeIn = false;
+    bool fadeOut = false;
+    bool active = false;
 
     sf::RectangleShape overlay;
 };

@@ -1,54 +1,77 @@
 #include "scenes/GameOverScene.hpp"
 #include "ui/FontManager.hpp"
+#include "Game.hpp"
 #include "scenes/GameScene.hpp"
+#include "scenes/MenuScene.hpp"
+#include "scenes/ConfirmExit.hpp"
 
-GameOverScene::GameOverScene(sf::RenderWindow& window, SceneManager& manager, int score)
-    : Scene(window), sceneManager(manager), neon(window)
+GameOverScene::GameOverScene(Game& game, int score)
+: Scene(game)
+, retryBtn("RETRY", 28)
+, menuBtn("MAIN MENU", 26)
+, exitBtn("EXIT GAME", 26)
 {
-    gameOverText.setFont(FontManager::get());
-    gameOverText.setString("GAME OVER");
-    gameOverText.setCharacterSize(56);
-    gameOverText.setFillColor(sf::Color::Red);
+    auto& w = game.window;
 
-    sf::FloatRect b = gameOverText.getLocalBounds();
-    gameOverText.setOrigin(b.width / 2, b.height / 2);
-    gameOverText.setPosition(window.getSize().x / 2, 120);
+    title.setFont(FontManager::get());
+    title.setString("GAME OVER");
+    title.setCharacterSize(62);
+    title.setFillColor(sf::Color::Red);
+
+    auto tb = title.getLocalBounds();
+    title.setOrigin(tb.width / 2, tb.height / 2);
+    title.setPosition(w.getSize().x / 2, 120);
 
     scoreText.setFont(FontManager::get());
     scoreText.setString("Score: " + std::to_string(score));
-    scoreText.setCharacterSize(28);
+    scoreText.setCharacterSize(32);
     scoreText.setFillColor(sf::Color::White);
-    scoreText.setPosition(window.getSize().x / 2 - 60, 200);
 
-    retryButton = new Button("RETRY", 32);
-    menuButton = new Button("MENU", 32);
+    auto sb = scoreText.getLocalBounds();
+    scoreText.setOrigin(sb.width / 2, sb.height / 2);
+    scoreText.setPosition(w.getSize().x / 2, 190);
 
-    retryButton->setPosition(window.getSize().x / 2 - 100, 260);
-    menuButton->setPosition(window.getSize().x / 2 - 100, 320);
+    float cx = w.getSize().x / 2;
+
+    retryBtn.setPosition(cx - retryBtn.getWidth() / 2, 260);
+    menuBtn.setPosition(cx - menuBtn.getWidth() / 2, 330);
+    exitBtn.setPosition(cx - exitBtn.getWidth() / 2, 400);
 }
 
-void GameOverScene::handleEvent(sf::Event& event) {}
+void GameOverScene::handleEvent(sf::Event& event) {
+    auto& w = game.window;
+
+    retryBtn.handleEvent(event, w);
+    menuBtn.handleEvent(event, w);
+    exitBtn.handleEvent(event, w);
+}
 
 void GameOverScene::update(float dt) {
-    neon.update(dt, window);
+    auto& w = game.window;
 
-    retryButton->update(window);
-    menuButton->update(window);
+    retryBtn.update(w);
+    menuBtn.update(w);
+    exitBtn.update(w);
 
-    if (retryButton->isClicked(window)) {
-        sceneManager.push(std::make_unique<GameScene>(window, sceneManager));
+    if (retryBtn.isClicked(w)) {
+        game.scenes.pop();  
+        game.scenes.push(std::make_unique<GameScene>(game));
     }
 
-    if (menuButton->isClicked(window)) {
-        sceneManager.clear();
+    if (menuBtn.isClicked(w)) {
+        while (game.scenes.current()) game.scenes.pop();
+        game.scenes.push(std::make_unique<MenuScene>(game));
+    }
+
+    if (exitBtn.isClicked(w)) {
+        game.scenes.push(std::make_unique<ConfirmExit>(game));
     }
 }
 
 void GameOverScene::draw(sf::RenderWindow& window) {
-    neon.draw(window);
-    window.draw(gameOverText);
+    window.draw(title);
     window.draw(scoreText);
-
-    retryButton->draw(window);
-    menuButton->draw(window);
+    retryBtn.draw(window);
+    menuBtn.draw(window);
+    exitBtn.draw(window);
 }

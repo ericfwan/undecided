@@ -1,66 +1,136 @@
 #include "ui/Button.hpp"
 #include "ui/FontManager.hpp"
-#include "ui/SoundBank.hpp"
 
-Button::Button(const std::string& text, unsigned int size) {
+Button::Button(const std::string& text, unsigned int charSize)
+{
+    box.setSize({260.f, 55.f});
+    box.setFillColor(sf::Color(60, 60, 80));
+    box.setOutlineThickness(3);
+    box.setOutlineColor(normalOutline);
+
     label.setFont(FontManager::get());
     label.setString(text);
-    label.setCharacterSize(size);
+    label.setCharacterSize(charSize);
+    label.setFillColor(sf::Color::White);
 
-    // Default button theme
-    normalColor = sf::Color(0, 255, 255);
-    hoverColor  = sf::Color(255, 0, 255);
-
-    label.setFillColor(normalColor);
-
-    // Background box based on text size
-    sf::FloatRect bounds = label.getLocalBounds();
-    box.setSize({bounds.width + 20, bounds.height + 20});
-    box.setFillColor(sf::Color::Transparent);
-    box.setOutlineThickness(2);
-    box.setOutlineColor(normalColor);
+    fitText();
+    centerText();
 }
 
-void Button::setPosition(float x, float y) {
+void Button::setPosition(float x, float y)
+{
     box.setPosition(x, y);
-    label.setPosition(x + 10, y + 8);
+    centerText();
 }
 
-void Button::setColors(sf::Color normal, sf::Color hover) {
-    normalColor = normal;
-    hoverColor  = hover;
+void Button::setSize(float w, float h)
+{
+    box.setSize({w, h});
+    fitText();
+    centerText();
 }
 
-void Button::setOutline(float thickness, sf::Color color) {
-    box.setOutlineThickness(thickness);
-    box.setOutlineColor(color);
+void Button::setFillColor(const sf::Color& c)
+{
+    box.setFillColor(c);
 }
 
-void Button::update(sf::RenderWindow& window) {
-    auto mouse = sf::Mouse::getPosition(window);
-    hovered = box.getGlobalBounds().contains(mouse.x, mouse.y);
+void Button::setOutlineColor(const sf::Color& c)
+{
+    box.setOutlineColor(c);
+}
 
-    if (hovered) {
-        label.setFillColor(hoverColor);
-        box.setOutlineColor(hoverColor);
+void Button::setSelected(bool state, const sf::Color& glowColor)
+{
+    selected = state;
+
+    if (selected) {
+        highlightOutline = glowColor;
+        box.setOutlineColor(glowColor);
+        box.setOutlineThickness(4.f);
     } else {
-        label.setFillColor(normalColor);
-        box.setOutlineColor(normalColor);
+        box.setOutlineColor(normalOutline);
+        box.setOutlineThickness(3.f);
     }
 }
 
-bool Button::isClicked(sf::RenderWindow& window) {
-    if (hovered && sf::Mouse::isButtonPressed(sf::Mouse::Left)) {
+void Button::fitText()
+{
+    sf::FloatRect bounds = label.getLocalBounds();
+    float padding = 20.f;
 
-        // Play click audio
-        SoundBank::get().play("click");
+    while (bounds.width + padding > box.getSize().x && label.getCharacterSize() > 10)
+    {
+        label.setCharacterSize(label.getCharacterSize() - 2);
+        bounds = label.getLocalBounds();
+    }
+}
 
+void Button::centerText()
+{
+    sf::FloatRect tb = label.getLocalBounds();
+
+    label.setOrigin(tb.left + tb.width / 2, tb.top + tb.height / 2);
+    label.setPosition(
+        box.getPosition().x + box.getSize().x / 2,
+        box.getPosition().y + box.getSize().y / 2 - 3
+    );
+}
+
+void Button::handleEvent(const sf::Event& event, const sf::RenderWindow& window)
+{
+    if (event.type == sf::Event::MouseButtonPressed &&
+        event.mouseButton.button == sf::Mouse::Left)
+    {
+        if (box.getGlobalBounds().contains(
+                {(float)event.mouseButton.x, (float)event.mouseButton.y}))
+        {
+            pressed = true;
+        }
+    }
+
+    if (event.type == sf::Event::MouseButtonReleased &&
+        event.mouseButton.button == sf::Mouse::Left)
+    {
+        if (pressed &&
+            box.getGlobalBounds().contains(
+                {(float)event.mouseButton.x, (float)event.mouseButton.y}))
+        {
+            released = true;
+        }
+        pressed = false;
+    }
+}
+
+void Button::update(const sf::RenderWindow& window)
+{
+    if (selected) return;
+
+    hovered = box.getGlobalBounds().contains(
+        (sf::Vector2f)sf::Mouse::getPosition(window)
+    );
+
+    if (hovered)
+        box.setFillColor(sf::Color(80, 80, 110));
+    else
+        box.setFillColor(sf::Color(60, 60, 80));
+
+   
+}
+
+
+bool Button::isClicked(const sf::RenderWindow& window)
+{
+    if (released) {
+        released = false;   // reset AFTER scene reads it
         return true;
     }
     return false;
 }
 
-void Button::draw(sf::RenderWindow& window) {
+
+void Button::draw(sf::RenderWindow& window) const
+{
     window.draw(box);
     window.draw(label);
 }

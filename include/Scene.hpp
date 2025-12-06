@@ -1,11 +1,11 @@
 #pragma once
 #include <SFML/Graphics.hpp>
 
-class SceneManager;
+class Game;
 
 class Scene {
 public:
-    Scene(sf::RenderWindow& window) : window(window) {}
+    Scene(Game& game) : game(game) {}
     virtual ~Scene() = default;
 
     virtual void handleEvent(sf::Event& event) = 0;
@@ -13,5 +13,5 @@ public:
     virtual void draw(sf::RenderWindow& window) = 0;
 
 protected:
-    sf::RenderWindow& window;
+    Game& game;
 };

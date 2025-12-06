@@ -1,59 +1,63 @@
 #include "scenes/MenuScene.hpp"
-#include "scenes/GameScene.hpp"
+#include "Game.hpp"
 #include "ui/FontManager.hpp"
-#include "config.hpp"
-#include <iostream>
+#include "scenes/GameScene.hpp"
+#include "scenes/Options.hpp"
+#include "scenes/ConfirmExit.hpp"
 
-MenuScene::MenuScene(sf::RenderWindow& window, SceneManager& manager)
-    : Scene(window), sceneManager(manager), neon(window)
+MenuScene::MenuScene(Game& game)
+: Scene(game)
+, playButton("PLAY", 32)
+, optionsButton("OPTIONS", 32)
+, exitButton("EXIT", 32)
 {
-    // Title
+    auto& w = game.window;
+
     title.setFont(FontManager::get());
     title.setString("UNDECIDED");
     title.setCharacterSize(64);
     title.setFillColor(sf::Color::Cyan);
 
-    sf::FloatRect b = title.getLocalBounds();
+    auto b = title.getLocalBounds();
     title.setOrigin(b.width / 2, b.height / 2);
-    title.setPosition(window.getSize().x / 2, 120);
+    title.setPosition(w.getSize().x / 2, 120);
 
-    // Buttons
-    playButton = new Button("PLAY", 32);
-    optionsButton = new Button("OPTIONS", 32);
-    exitButton = new Button("EXIT", 32);
+    float cx = w.getSize().x / 2;
 
-    float cx = window.getSize().x / 2 - 100;
-    float cy = 240;
-
-    playButton->setPosition(cx, cy);
-    optionsButton->setPosition(cx, cy + 60);
-    exitButton->setPosition(cx, cy + 120);
+    playButton.setPosition(cx - playButton.getWidth() / 2, 250);
+    optionsButton.setPosition(cx - optionsButton.getWidth() / 2, 320);
+    exitButton.setPosition(cx - exitButton.getWidth() / 2, 390);
 }
 
-void MenuScene::handleEvent(sf::Event& event) {}
+void MenuScene::handleEvent(sf::Event& event) {
+    auto& w = game.window;
+
+    playButton.handleEvent(event, w);
+    optionsButton.handleEvent(event, w);
+    exitButton.handleEvent(event, w);
+}
 
 void MenuScene::update(float dt) {
-    neon.update(dt, window);
+    auto& w = game.window;
 
-    playButton->update(window);
-    optionsButton->update(window);
-    exitButton->update(window);
+    playButton.update(w);
+    optionsButton.update(w);
+    exitButton.update(w);
 
-    if (playButton->isClicked(window)) {
-        std::cout << "Switching to GameScene...\n";
-        sceneManager.push(std::make_unique<GameScene>(window, sceneManager));
+    if (playButton.isClicked(w)) {
+        game.scenes.push(std::make_unique<GameScene>(game));
     }
-
-    if (exitButton->isClicked(window)) {
-        window.close();
+    if (optionsButton.isClicked(w)) {
+        game.scenes.push(std::make_unique<Options>(game));
+    }
+    if (exitButton.isClicked(w)) {
+        game.scenes.push(std::make_unique<ConfirmExit>(game));
     }
 }
 
 void MenuScene::draw(sf::RenderWindow& window) {
-    neon.draw(window);
     window.draw(title);
-
-    playButton->draw(window);
-    optionsButton->draw(window);
-    exitButton->draw(window);
+    playButton.draw(window);
+    optionsButton.draw(window);
+    exitButton.draw(window);
 }

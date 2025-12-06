@@ -1,24 +1,26 @@
 #include "ui/HUD.hpp"
 #include "ui/FontManager.hpp"
 
-HUD::HUD(sf::RenderWindow& window) {
+HUD::HUD()
+{
     scoreText.setFont(FontManager::get());
-    scoreText.setCharacterSize(20);
+    scoreText.setCharacterSize(28);
     scoreText.setFillColor(sf::Color::White);
-    scoreText.setPosition(20, 10);
-
-    livesText.setFont(FontManager::get());
-    livesText.setCharacterSize(20);
-    livesText.setFillColor(sf::Color::White);
-    livesText.setPosition(window.getSize().x - 120, 10);
+    scoreText.setPosition(20, 20);
 }
 
-void HUD::update(float dt) {
-    scoreText.setString("Score: " + std::to_string(score));
-    livesText.setString("Lives: " + std::to_string(lives));
+void HUD::setScore(int s)
+{
+    score = s;
+    scoreText.setString("Score: " + std::to_string(s));
 }
 
-void HUD::draw(sf::RenderWindow& window) {
-    window.draw(scoreText);
-    window.draw(livesText);
+void HUD::update(float dt)
+{
+    // could animate later
+}
+
+void HUD::draw(sf::RenderWindow& w)
+{
+    w.draw(scoreText);
 }

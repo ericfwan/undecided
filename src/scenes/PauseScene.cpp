@@ -1,46 +1,71 @@
 #include "scenes/PauseScene.hpp"
+#include "scenes/GameScene.hpp"
+#include "scenes/MenuScene.hpp"
 #include "ui/FontManager.hpp"
-#include <iostream>
+#include "Game.hpp"
 
-PauseScene::PauseScene(sf::RenderWindow& window, SceneManager& manager)
-    : Scene(window), sceneManager(manager), neon(window)
+PauseScene::PauseScene(Game& game)
+: Scene(game)
+, resumeBtn("RESUME", 28)
+, restartBtn("RESTART", 28)
+, quitBtn("QUIT", 28)
 {
-    pausedText.setFont(FontManager::get());
-    pausedText.setString("PAUSED");
-    pausedText.setCharacterSize(48);
-    pausedText.setFillColor(sf::Color::Yellow);
+    auto& w = game.window;
 
-    sf::FloatRect b = pausedText.getLocalBounds();
-    pausedText.setOrigin(b.width / 2, b.height / 2);
-    pausedText.setPosition(window.getSize().x / 2, 120);
+    pausedLabel.setFont(FontManager::get());
+    pausedLabel.setString("PAUSED");
+    pausedLabel.setCharacterSize(60);
+    pausedLabel.setFillColor(sf::Color::White);
 
-    resumeButton = new Button("RESUME", 32);
-    menuButton = new Button("MENU", 32);
+    auto pb = pausedLabel.getLocalBounds();
+    pausedLabel.setOrigin(pb.width / 2, pb.height / 2);
+    pausedLabel.setPosition(w.getSize().x / 2, 200);
 
-    resumeButton->setPosition(window.getSize().x / 2 - 100, 250);
-    menuButton->setPosition(window.getSize().x / 2 - 100, 310);
+    float cx = w.getSize().x / 2;
+
+    resumeBtn.setPosition(cx - resumeBtn.getWidth() / 2, 330);
+    restartBtn.setPosition(cx - restartBtn.getWidth() / 2, 410);
+    quitBtn.setPosition(cx - quitBtn.getWidth() / 2, 490);
 }
 
-void PauseScene::handleEvent(sf::Event& event) {}
+void PauseScene::handleEvent(sf::Event& event)
+{
+    auto& w = game.window;
 
-void PauseScene::update(float dt) {
-    neon.update(dt, window);
+    resumeBtn.handleEvent(event, w);
+    restartBtn.handleEvent(event, w);
+    quitBtn.handleEvent(event, w);
+}
 
-    resumeButton->update(window);
-    menuButton->update(window);
+void PauseScene::update(float dt)
+{
+    auto& w = game.window;
 
-    if (resumeButton->isClicked(window)) {
-        sceneManager.pop();  // return to game
+    resumeBtn.update(w);
+    restartBtn.update(w);
+    quitBtn.update(w);
+
+    if (resumeBtn.isClicked(w)) {
+        game.scenes.pop(); // back to gameplay
     }
 
-    if (menuButton->isClicked(window)) {
-        sceneManager.clear();
+    if (restartBtn.isClicked(w)) {
+        game.scenes.pop();                 // remove pause
+        game.scenes.pop();                 // remove game
+        game.scenes.push(std::make_unique<GameScene>(game));
+    }
+
+    if (quitBtn.isClicked(w)) {
+        game.scenes.pop();                 // remove pause
+        game.scenes.pop();                 // remove game
+        game.scenes.push(std::make_unique<MenuScene>(game));
     }
 }
 
-void PauseScene::draw(sf::RenderWindow& window) {
-    neon.draw(window);
-    window.draw(pausedText);
-    resumeButton->draw(window);
-    menuButton->draw(window);
+void PauseScene::draw(sf::RenderWindow& window)
+{
+    window.draw(pausedLabel);
+    resumeBtn.draw(window);
+    restartBtn.draw(window);
+    quitBtn.draw(window);
 }

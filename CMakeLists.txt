@@ -1,29 +1,43 @@
 cmake_minimum_required(VERSION 3.11)
-project(setup)
+project(Undecided)
 
-
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-#Setup Directories
-#Main output directory
-SET(OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/")
+# -------------------------------------------------------------
+# SFML (Homebrew installation)
+# -------------------------------------------------------------
+set(SFML_DIR "/opt/homebrew/Cellar/sfml@2/2.6.2_1/lib/cmake/SFML")
+find_package(SFML 2.6 COMPONENTS system window graphics audio REQUIRED)
 
-#Output all DLLs from all libs into main build folder
-SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIRECTORY})
+# -------------------------------------------------------------
+# Source files
+# -------------------------------------------------------------
+file(GLOB_RECURSE SRC_FILES
+    "src/*.cpp"
+)
 
-#Add External Dependencies
-add_subdirectory("lib/SFML")
-set(SFML_INC "lib/SFML/include")
-set(MY_INCLUDE "include")
-link_directories("${CMAKE_BINARY_DIR}/lib/SFML/lib")
+# -------------------------------------------------------------
+# Executable
+# -------------------------------------------------------------
+add_executable(undecided ${SRC_FILES})
 
-
-file(GLOB_RECURSE SOURCES "src/*.cpp")
-file(GLOB_RECURSE INCLUDE "include/*.hpp")
-add_executable(undecided ${SOURCES} ${INCLUDE}
-        src/scenes/SceneMAnager.cpp)
 target_include_directories(undecided PRIVATE
-        ${SFML_INC}
-        ${MY_INCLUDE})
-target_link_libraries(undecided sfml-graphics)
+    ${CMAKE_SOURCE_DIR}/include
+)
+
+target_link_libraries(undecided
+    sfml-system
+    sfml-window
+    sfml-graphics
+    sfml-audio
+)
+
+# -------------------------------------------------------------
+# Copy assets folder to build directory after build
+# -------------------------------------------------------------
+add_custom_command(TARGET undecided POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_directory
+    ${CMAKE_SOURCE_DIR}/assets
+    ${CMAKE_CURRENT_BINARY_DIR}/assets
+)

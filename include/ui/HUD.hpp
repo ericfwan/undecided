@@ -3,15 +3,13 @@
 
 class HUD {
 public:
-    HUD(sf::RenderWindow& window);
+    HUD();
 
+    void setScore(int s);
     void update(float dt);
-    void draw(sf::RenderWindow& window);
+    void draw(sf::RenderWindow& w);
 
 private:
     sf::Text scoreText;
-    sf::Text livesText;
-
     int score = 0;
-    int lives = 3;
 };

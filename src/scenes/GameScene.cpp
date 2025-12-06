@@ -1,207 +1,133 @@
 #include "scenes/GameScene.hpp"
-#include "ui/FontManager.hpp"
-#include "scenes/PauseScene.hpp"
-#include <iostream>
-#include "scenes/GameScene.hpp"
-#include "Scene.hpp"
+#include "Game.hpp"
 #include <cmath>
-#include "SceneManager.hpp"
-#include "ui/NeonBackground.hpp"
 
+GameScene::GameScene(Game& game)
+: Scene(game)
+{
+    windowWidth = static_cast<float>(game.window.getSize().x);
+    windowHeight = static_cast<float>(game.window.getSize().y);
 
-GameScene::GameScene() {
-    // Window size
-    windowWidth = 800.f;
-    windowHeight = 600.f;
-
-    // Physics
     gravity = 800.f;
     bounceFactor = 0.8f;
     platformSpeed = 500.f;
 
-    // Setup ball
+    // Ball setup
     ball.setRadius(15.f);
-    ball.setFillColor(sf::Color::Red);
-    ball.setOrigin(15.f, 15.f); // Center origin
-    ball.setPosition(400.f, 100.f);
-    ballVelocity = sf::Vector2f(150.f, 0.f);
+    ball.setFillColor(game.ballColor);
 
-    // Setup platform
-    platform.setSize(sf::Vector2f(120.f, 20.f));
+    ball.setOrigin(15.f, 15.f);
+    ball.setPosition(windowWidth / 2.f, 120.f);
+    ballVelocity = {150.f, 0.f};
+
+    // Platform setup
+    platform.setSize({150.f, 20.f});
+    platform.setOrigin(75.f, 10.f);
     platform.setFillColor(sf::Color::White);
-    platform.setOrigin(60.f, 10.f); // Center origin
-    platform.setPosition(400.f, 500.f);
+    platform.setPosition(windowWidth / 2.f, windowHeight - 100.f);
 }
 
-
-void GameScene::handleEvent(sf::Event &event, float const dt) {
+void GameScene::handleEvent(sf::Event& event) {
     // Mouse control
     if (event.type == sf::Event::MouseMoved) {
-        auto mouseX = static_cast<float>(event.mouseMove.x);
-        auto mouseY = static_cast<float>(event.mouseMove.y);
+        float mouseX = static_cast<float>(event.mouseMove.x);
 
-        // Keep platform in bounds
-        float const halfWidth = platform.getSize().x / 2.f;
-        float const halfHeight = platform.getSize().y / 2.f;
+        float half = platform.getSize().x / 2.f;
+        if (mouseX < half) mouseX = half;
+        if (mouseX > windowWidth - half) mouseX = windowWidth - half;
 
-        if (mouseX < halfWidth) {
-            mouseX = halfWidth;
-        }
-        if (mouseX > windowWidth - halfWidth) {
-            mouseX = windowWidth - halfWidth;
-        }
-        if (mouseY < halfHeight) {
-            mouseY = halfHeight;
-        }
-        if (mouseY > windowHeight - halfHeight) {
-            mouseY = windowHeight - halfHeight;
-        }
-
-
-        platform.setPosition(mouseX, mouseY);
+        platform.setPosition(mouseX, platform.getPosition().y);
     }
+}
 
-
-    // Keyboard control for platform
-    float platformHalfWidth = platform.getSize().x / 2.f;
-    float platformHalfHeight = platform.getSize().y / 2.f;
-    float constexpr  rotationSpeed = 360.f; // degrees per second
-
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
-        sf::Keyboard::isKeyPressed(sf::Keyboard::Q)) {
-        platform.rotate(-rotationSpeed * dt);
-    }
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ||
-        sf::Keyboard::isKeyPressed(sf::Keyboard::E)) {
-        platform.rotate(rotationSpeed * dt);
-    }
-
-    // Keep platform in bounds
-    sf::Vector2f platPos = platform.getPosition();
-    platformHalfWidth = platform.getSize().x / 2.f;
-    platformHalfHeight = platform.getSize().y / 2.f;
-
-    // Clamp X
-    if (platPos.x < platformHalfWidth) {
-        platPos.x = platformHalfWidth;
-    }
-    if (platPos.x > windowWidth - platformHalfWidth) {
-        platPos.x = windowWidth - platformHalfWidth;
-    }
-
-    // Clamp Y
-    if (platPos.y < platformHalfHeight) {
-        platPos.y = platformHalfHeight;
-    }
-    if (platPos.y > windowHeight - platformHalfHeight) {
-        platPos.y = windowHeight - platformHalfHeight;
-    }
-
-    // Apply clamped position
-    platform.setPosition(platPos);
-
-    // Apply gravity to ball
+void GameScene::update(float dt) {
+    // Gravity
     ballVelocity.y += gravity * dt;
 
     // Move ball
     ball.move(ballVelocity * dt);
 
-    // Handle collisions
+    // Collisions
     handleWallCollision();
     handlePlatformCollision();
+
+    // Keyboard rotation
+    const float rotSpeed = 250.f;
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left) ||
+        sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
+    {
+        platform.rotate(-rotSpeed * dt);
+    }
+
+    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right) ||
+        sf::Keyboard::isKeyPressed(sf::Keyboard::E))
+    {
+        platform.rotate(rotSpeed * dt);
+    }
 }
 
 void GameScene::handleWallCollision() {
     sf::Vector2f pos = ball.getPosition();
-    const float radius = ball.getRadius();
+    float r = ball.getRadius();
 
-    // Left wall
-    if (pos.x - radius < 0.f) {
-        ball.setPosition(radius, pos.y);
-        if (ballVelocity.x > -100.f) {
-            ballVelocity.x = std::abs(ballVelocity.x);
-        } else {
-            ballVelocity.x = std::abs(ballVelocity.x) * bounceFactor;
-        }
+    // Left
+    if (pos.x - r < 0.f) {
+        ball.setPosition(r, pos.y);
+        ballVelocity.x = std::abs(ballVelocity.x);
     }
 
-    // Right wall
-    if (pos.x + radius > windowWidth) {
-        ball.setPosition(windowWidth - radius, pos.y);
-        if (ballVelocity.x < 100.f) {
-            ballVelocity.x = -std::abs(ballVelocity.x);
-        } else {
-            ballVelocity.x = -std::abs(ballVelocity.x) * bounceFactor;
-        }
+    // Right
+    if (pos.x + r > windowWidth) {
+        ball.setPosition(windowWidth - r, pos.y);
+        ballVelocity.x = -std::abs(ballVelocity.x);
     }
 
-    // Ceiling
-    if (pos.y - radius < 0.f) {
-        ball.setPosition(pos.x, radius);
-        if (ballVelocity.y < 100.f) {
-            ballVelocity.y = -std::abs(ballVelocity.y);
-        } else {
-            ballVelocity.y = -std::abs(ballVelocity.y) * bounceFactor;
-        }
+    // Top
+    if (pos.y - r < 0.f) {
+        ball.setPosition(pos.x, r);
+        ballVelocity.y = std::abs(ballVelocity.y);
     }
 
-    // Floor
-    if (pos.y + radius > windowHeight) {
-        ball.setPosition(pos.x, windowHeight - radius);
-        if (ballVelocity.y > -100.f) {
-            ballVelocity.y = -std::abs(ballVelocity.y);
-        } else {
-            ballVelocity.y = -std::abs(ballVelocity.y) * bounceFactor;
-        }
+    // Bottom (soft bounce)
+    if (pos.y + r > windowHeight) {
+        ball.setPosition(pos.x, windowHeight - r);
+        ballVelocity.y = -std::abs(ballVelocity.y) * bounceFactor;
     }
 }
 
 void GameScene::handlePlatformCollision() {
-    sf::Vector2f ballPos = ball.getPosition();
-    float radius = ball.getRadius();
+    sf::Vector2f pos = ball.getPosition();
+    float r = ball.getRadius();
 
-    sf::Vector2f platPos = platform.getPosition();
-    sf::Vector2f platSize = platform.getSize();
+    sf::Vector2f pPos = platform.getPosition();
+    sf::Vector2f pSize = platform.getSize();
 
-    // Platform boundaries
-    float platLeft = platPos.x - platSize.x / 2.f;
-    float platRight = platPos.x + platSize.x / 2.f;
-    float platTop = platPos.y - platSize.y / 2.f;
+    float left = pPos.x - pSize.x / 2.f;
+    float right = pPos.x + pSize.x / 2.f;
+    float top = pPos.y - pSize.y / 2.f;
 
-    // Check if ball hits platform
-    bool ballAbovePlatform = ballPos.x + radius > platLeft &&
-                             ballPos.x - radius < platRight;
-    bool ballHitsPlatformTop = ballPos.y + radius > platTop &&
-                               ballPos.y + radius < platTop + 20.f;
-    bool ballMovingDown = ballVelocity.y > 0;
+    // Check horizontal overlap
+    bool overPlatformX = pos.x + r > left && pos.x - r < right;
 
-    if (ballAbovePlatform && ballHitsPlatformTop && ballMovingDown) {
-        // Place ball on top of platform
-        ball.setPosition(ballPos.x, platTop - radius);
+    // Check vertical overlap (ball descending)
+    bool hittingTop = pos.y + r > top && pos.y + r < top + 30.f;
+    bool movingDown = ballVelocity.y > 0;
 
-        // Bounce upward
+    if (overPlatformX && hittingTop && movingDown) {
+        // Place ball on platform
+        ball.setPosition(pos.x, top - r);
+
+        // Bounce
         ballVelocity.y = -std::abs(ballVelocity.y) * bounceFactor;
 
-        // Add spin based on where ball hit platform
-        float hitPosition = (ballPos.x - platPos.x) / (platSize.x / 2.f);
-        ballVelocity.x += hitPosition * 150.f;
+        // Add spin effect depending on hit position
+        float offset = (pos.x - pPos.x) / (pSize.x / 2.f);
+        ballVelocity.x += offset * 200.f;
     }
 }
-
-void GameScene::draw(sf::RenderWindow &window) {
+void GameScene::draw(sf::RenderWindow& window) {
     window.draw(platform);
     window.draw(ball);
 }
-
-void GameScene::update(float dt) {
-    neon.update(dt, window);
-    hud.update(dt);
-}
-
-void GameScene::draw(sf::RenderWindow &window) {
-    neon.draw(window);
-    window.draw(label);
-    hud.draw(window);
-}
-
 
