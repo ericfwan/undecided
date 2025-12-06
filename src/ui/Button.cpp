@@ -54,6 +54,7 @@ void Button::setSelected(bool state, const sf::Color& glowColor)
     }
 }
 
+// Shrink label if it overflows the button width.
 void Button::fitText()
 {
     sf::FloatRect bounds = label.getLocalBounds();
@@ -66,6 +67,7 @@ void Button::fitText()
     }
 }
 
+// Center the label within the rectangle.
 void Button::centerText()
 {
     sf::FloatRect tb = label.getLocalBounds();
@@ -79,6 +81,9 @@ void Button::centerText()
 
 void Button::handleEvent(const sf::Event& event, const sf::RenderWindow& window)
 {
+    (void)window; // Window not needed here, but kept in signature for consistency.
+
+    // Start click only if mouse pressed within bounds.
     if (event.type == sf::Event::MouseButtonPressed &&
         event.mouseButton.button == sf::Mouse::Left)
     {
@@ -89,6 +94,8 @@ void Button::handleEvent(const sf::Event& event, const sf::RenderWindow& window)
         }
     }
 
+    // Complete click only if press started on the button
+    // and release also happens within bounds.
     if (event.type == sf::Event::MouseButtonReleased &&
         event.mouseButton.button == sf::Mouse::Left)
     {
@@ -104,30 +111,29 @@ void Button::handleEvent(const sf::Event& event, const sf::RenderWindow& window)
 
 void Button::update(const sf::RenderWindow& window)
 {
+    // Selected buttons keep their special outline style.
     if (selected) return;
 
     hovered = box.getGlobalBounds().contains(
         (sf::Vector2f)sf::Mouse::getPosition(window)
     );
 
-    if (hovered)
-        box.setFillColor(sf::Color(80, 80, 110));
-    else
-        box.setFillColor(sf::Color(60, 60, 80));
-
-   
+    box.setFillColor(hovered ? sf::Color(80, 80, 110)
+                             : sf::Color(60, 60, 80));
 }
 
-
+// One-shot click read.
+// The scene reads this once; we reset immediately after.
 bool Button::isClicked(const sf::RenderWindow& window)
 {
+    (void)window; // Unused; click state is event-driven.
+
     if (released) {
-        released = false;   // reset AFTER scene reads it
+        released = false;
         return true;
     }
     return false;
 }
-
 
 void Button::draw(sf::RenderWindow& window) const
 {

@@ -1,5 +1,7 @@
 #include "scenes/GameScene.hpp"
 #include "Game.hpp"
+#include "scenes/PauseScene.hpp"
+
 #include <cmath>
 
 GameScene::GameScene(Game& game)
@@ -27,8 +29,24 @@ GameScene::GameScene(Game& game)
     platform.setPosition(windowWidth / 2.f, windowHeight - 100.f);
 }
 
-void GameScene::handleEvent(sf::Event& event) {
-    // Mouse control
+void GameScene::handleEvent(sf::Event& event) 
+{
+    // --------------------------------------------
+    // ESC -> Pause
+    // The Game loop sends events only to the top
+    // scene, so we trigger pause from gameplay.
+    // --------------------------------------------
+    if (event.type == sf::Event::KeyPressed &&
+        event.key.code == sf::Keyboard::Escape)
+    {
+        // Push pause overlay on top of the game.
+        // When paused, GameScene won't receive events
+        // until PauseScene is popped.
+        game.scenes.push(std::make_unique<PauseScene>(game));
+        return;
+    }
+
+    // Mouse control for platform x-position
     if (event.type == sf::Event::MouseMoved) {
         float mouseX = static_cast<float>(event.mouseMove.x);
 
@@ -40,7 +58,8 @@ void GameScene::handleEvent(sf::Event& event) {
     }
 }
 
-void GameScene::update(float dt) {
+void GameScene::update(float dt) 
+{
     // Gravity
     ballVelocity.y += gravity * dt;
 
@@ -67,7 +86,8 @@ void GameScene::update(float dt) {
     }
 }
 
-void GameScene::handleWallCollision() {
+void GameScene::handleWallCollision() 
+{
     sf::Vector2f pos = ball.getPosition();
     float r = ball.getRadius();
 
@@ -96,7 +116,8 @@ void GameScene::handleWallCollision() {
     }
 }
 
-void GameScene::handlePlatformCollision() {
+void GameScene::handlePlatformCollision() 
+{
     sf::Vector2f pos = ball.getPosition();
     float r = ball.getRadius();
 
@@ -118,16 +139,17 @@ void GameScene::handlePlatformCollision() {
         // Place ball on platform
         ball.setPosition(pos.x, top - r);
 
-        // Bounce
+        // Bounce upwards
         ballVelocity.y = -std::abs(ballVelocity.y) * bounceFactor;
 
-        // Add spin effect depending on hit position
+        // Add directional influence depending on impact position
         float offset = (pos.x - pPos.x) / (pSize.x / 2.f);
         ballVelocity.x += offset * 200.f;
     }
 }
-void GameScene::draw(sf::RenderWindow& window) {
+
+void GameScene::draw(sf::RenderWindow& window) 
+{
     window.draw(platform);
     window.draw(ball);
 }
-

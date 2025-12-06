@@ -5,6 +5,8 @@
 #include "scenes/Options.hpp"
 #include "scenes/ConfirmExit.hpp"
 
+#include <memory>
+
 MenuScene::MenuScene(Game& game)
 : Scene(game)
 , playButton("PLAY", 32)
@@ -29,7 +31,8 @@ MenuScene::MenuScene(Game& game)
     exitButton.setPosition(cx - exitButton.getWidth() / 2, 390);
 }
 
-void MenuScene::handleEvent(sf::Event& event) {
+void MenuScene::handleEvent(sf::Event& event)
+{
     auto& w = game.window;
 
     playButton.handleEvent(event, w);
@@ -37,25 +40,41 @@ void MenuScene::handleEvent(sf::Event& event) {
     exitButton.handleEvent(event, w);
 }
 
-void MenuScene::update(float dt) {
+void MenuScene::update(float dt)
+{
     auto& w = game.window;
 
     playButton.update(w);
     optionsButton.update(w);
     exitButton.update(w);
 
+    // -----------------------------
+    // IMPORTANT:
+    // Only handle ONE action per frame.
+    // -----------------------------
+
+    // PLAY -> hard reset into gameplay.
     if (playButton.isClicked(w)) {
+        game.scenes.clear();
         game.scenes.push(std::make_unique<GameScene>(game));
+        return;
     }
+
+    // OPTIONS -> overlay on top of menu.
     if (optionsButton.isClicked(w)) {
         game.scenes.push(std::make_unique<Options>(game));
+        return;
     }
+
+    // EXIT -> confirm overlay.
     if (exitButton.isClicked(w)) {
         game.scenes.push(std::make_unique<ConfirmExit>(game));
+        return;
     }
 }
 
-void MenuScene::draw(sf::RenderWindow& window) {
+void MenuScene::draw(sf::RenderWindow& window)
+{
     window.draw(title);
     playButton.draw(window);
     optionsButton.draw(window);
