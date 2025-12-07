@@ -36,3 +36,4 @@ private:
     Game& game;
     std::vector<std::unique_ptr<Scene>> stack;
 };
+

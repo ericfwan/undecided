@@ -1,43 +1,44 @@
 cmake_minimum_required(VERSION 3.11)
-project(Undecided)
+project(undecided)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# -------------------------------------------------------------
-# SFML (Homebrew installation)
-# -------------------------------------------------------------
-set(SFML_DIR "/opt/homebrew/Cellar/sfml@2/2.6.2_1/lib/cmake/SFML")
-find_package(SFML 2.6 COMPONENTS system window graphics audio REQUIRED)
+set(OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIRECTORY})
 
-# -------------------------------------------------------------
-# Source files
-# -------------------------------------------------------------
-file(GLOB_RECURSE SRC_FILES
-    "src/*.cpp"
+add_subdirectory("lib/SFML")
+set(SFML_INCS "lib/SFML/include")
+set(INCLUDE "include")
+link_directories("${CMAKE_BINARY_DIR}/lib/SFML/lib")
+
+# Use GLOB_RECURSE to find all .cpp files in subfolders too!
+file(GLOB_RECURSE SOURCES "src/*.cpp")
+file(GLOB_RECURSE INCLUDES "include/*.hpp")
+
+add_executable(undecided
+        ${SOURCES}
+        ${INCLUDES}
+        src/physics/RigidBody.cpp
+        include/scenes/Renderer.hpp
+        src/scenes/Renderer.cpp
 )
 
-# -------------------------------------------------------------
-# Executable
-# -------------------------------------------------------------
-add_executable(undecided ${SRC_FILES})
 
 target_include_directories(undecided PRIVATE
-    ${CMAKE_SOURCE_DIR}/include
+        ${SFML_INCS}
+        ${INCLUDE}
 )
-
 target_link_libraries(undecided
-    sfml-system
-    sfml-window
-    sfml-graphics
-    sfml-audio
+        sfml-system
+        sfml-window
+        sfml-graphics
+        sfml-audio
 )
 
-# -------------------------------------------------------------
-# Copy assets folder to build directory after build
-# -------------------------------------------------------------
 add_custom_command(TARGET undecided POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E copy_directory
-    ${CMAKE_SOURCE_DIR}/assets
-    ${CMAKE_CURRENT_BINARY_DIR}/assets
+        COMMAND ${CMAKE_COMMAND} -E copy_directory
+        ${CMAKE_SOURCE_DIR}/assets/
+        ${CMAKE_CURRENT_BINARY_DIR}/bin
 )
+

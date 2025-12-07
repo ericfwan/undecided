@@ -1,24 +1,28 @@
 #include "scenes/GameScene.hpp"
 #include "Game.hpp"
+#include "physics/Collisions.hpp"
+#include "physics/RigidBody.hpp"
 #include <cmath>
 
 GameScene::GameScene(Game& game)
 : Scene(game)
 {
+
+    const Physics::Collisions physics;
+
     windowWidth = static_cast<float>(game.window.getSize().x);
     windowHeight = static_cast<float>(game.window.getSize().y);
 
-    gravity = 800.f;
-    bounceFactor = 0.8f;
-    platformSpeed = 500.f;
+    auto platform = Physics::RigidBody({30.f, 70.f}, {50.f, 10.f});
+    auto ball = Physics::RigidBody({30.f, 20.f}, 6.f);
+    sf::Vector2f gravity = physics.get_Gravity();
 
     // Ball setup
-    ball.setRadius(15.f);
-    ball.setFillColor(game.ballColor);
+
 
     ball.setOrigin(15.f, 15.f);
     ball.setPosition(windowWidth / 2.f, 120.f);
-    ballVelocity = {150.f, 0.f};
+    ball.Velocity = {150.f, 0.f};
 
     // Platform setup
     platform.setSize({150.f, 20.f});
@@ -42,7 +46,7 @@ void GameScene::handleEvent(sf::Event& event) {
 
 void GameScene::update(float dt) {
     // Gravity
-    ballVelocity.y += gravity * dt;
+    ball.velocity.y += gravity * dt;
 
     // Move ball
     ball.move(ballVelocity * dt);
