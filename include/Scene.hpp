@@ -3,6 +3,8 @@
 
 class Game;
 
+// Base class for all scenes
+// Each scene is responsible for its own input, update, and draw logic
 class Scene {
 public:
     Scene(Game& game) : game(game) {}

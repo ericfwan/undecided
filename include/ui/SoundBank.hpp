@@ -7,7 +7,6 @@ class SoundBank {
 public:
     static SoundBank& get();
 
-    // FIXED: now matches the .cpp file
     bool load(const std::string& id, const std::string& path);
 
     void play(const std::string& id);

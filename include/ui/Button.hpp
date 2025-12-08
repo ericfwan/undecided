@@ -12,12 +12,14 @@ public:
     void setFillColor(const sf::Color& c);
     void setOutlineColor(const sf::Color& c);
 
+    // Selected state used for option toggles
     void setSelected(bool state, const sf::Color& glowColor = sf::Color::Transparent);
 
     void handleEvent(const sf::Event& event, const sf::RenderWindow& window);
     void update(const sf::RenderWindow& window);
     void draw(sf::RenderWindow& window) const;
 
+    // Returns true once per completed click
     bool isClicked(const sf::RenderWindow& window);
 
     float getWidth() const { return box.getSize().x; }

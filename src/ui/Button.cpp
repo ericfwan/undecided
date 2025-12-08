@@ -54,6 +54,7 @@ void Button::setSelected(bool state, const sf::Color& glowColor)
     }
 }
 
+// Shrink label if it overflows the button width.
 void Button::fitText()
 {
     sf::FloatRect bounds = label.getLocalBounds();
@@ -66,6 +67,7 @@ void Button::fitText()
     }
 }
 
+// Center the label within the rectangle.
 void Button::centerText()
 {
     sf::FloatRect tb = label.getLocalBounds();
@@ -79,6 +81,8 @@ void Button::centerText()
 
 void Button::handleEvent(const sf::Event& event, const sf::RenderWindow& window)
 {
+    (void)window; 
+
     if (event.type == sf::Event::MouseButtonPressed &&
         event.mouseButton.button == sf::Mouse::Left)
     {
@@ -110,24 +114,21 @@ void Button::update(const sf::RenderWindow& window)
         (sf::Vector2f)sf::Mouse::getPosition(window)
     );
 
-    if (hovered)
-        box.setFillColor(sf::Color(80, 80, 110));
-    else
-        box.setFillColor(sf::Color(60, 60, 80));
-
-   
+    box.setFillColor(hovered ? sf::Color(80, 80, 110)
+                             : sf::Color(60, 60, 80));
 }
 
 
 bool Button::isClicked(const sf::RenderWindow& window)
 {
+    (void)window; 
+
     if (released) {
-        released = false;   // reset AFTER scene reads it
+        released = false;
         return true;
     }
     return false;
 }
-
 
 void Button::draw(sf::RenderWindow& window) const
 {

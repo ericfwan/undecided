@@ -3,6 +3,8 @@
 #include "ui/Button.hpp"
 #include <SFML/Graphics.hpp>
 
+// Pause overlay menu.
+// Triggered by ESC while in gameplay.
 class PauseScene : public Scene {
 public:
     PauseScene(Game& game);

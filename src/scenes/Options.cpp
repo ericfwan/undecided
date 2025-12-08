@@ -118,7 +118,7 @@ void Options::update(float dt)
 
     updateSelectionVisuals();
 
-    // SAVE → apply + return to menu
+    // SAVE then apply 
     if (saveBtn.isClicked(w)) {
         game.ballColor = selectedBallColor;
         game.neonColor = selectedBgColor;
@@ -126,7 +126,7 @@ void Options::update(float dt)
         game.scenes.pop(); // go back to main menu
     }
 
-    // BACK → don’t save, just leave
+    // BACK don’t save, just leave
     if (backBtn.isClicked(w)) {
         game.scenes.pop();
     }

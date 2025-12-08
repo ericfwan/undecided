@@ -4,6 +4,7 @@
 #include "scenes/GameScene.hpp"
 #include "scenes/Options.hpp"
 #include "scenes/ConfirmExit.hpp"
+#include <memory>
 
 MenuScene::MenuScene(Game& game)
 : Scene(game)
@@ -19,17 +20,18 @@ MenuScene::MenuScene(Game& game)
     title.setFillColor(sf::Color::Cyan);
 
     auto b = title.getLocalBounds();
-    title.setOrigin(b.width / 2, b.height / 2);
-    title.setPosition(w.getSize().x / 2, 120);
+    title.setOrigin(b.width / 2.f, b.height / 2.f);
+    title.setPosition(w.getSize().x / 2.f, 120.f);
 
-    float cx = w.getSize().x / 2;
+    float cx = w.getSize().x / 2.f;
 
-    playButton.setPosition(cx - playButton.getWidth() / 2, 250);
-    optionsButton.setPosition(cx - optionsButton.getWidth() / 2, 320);
-    exitButton.setPosition(cx - exitButton.getWidth() / 2, 390);
+    playButton.setPosition(cx - playButton.getWidth() / 2.f, 250.f);
+    optionsButton.setPosition(cx - optionsButton.getWidth() / 2.f, 320.f);
+    exitButton.setPosition(cx - exitButton.getWidth() / 2.f, 390.f);
 }
 
-void MenuScene::handleEvent(sf::Event& event) {
+void MenuScene::handleEvent(sf::Event& event)
+{
     auto& w = game.window;
 
     playButton.handleEvent(event, w);
@@ -37,26 +39,40 @@ void MenuScene::handleEvent(sf::Event& event) {
     exitButton.handleEvent(event, w);
 }
 
-void MenuScene::update(float dt) {
+void MenuScene::update(float dt)
+{
     auto& w = game.window;
 
+    // Hover visual updates
     playButton.update(w);
     optionsButton.update(w);
     exitButton.update(w);
 
+
     if (playButton.isClicked(w)) {
-        game.scenes.push(std::make_unique<GameScene>(game));
+        game.scenes.requestReplaceRoot(std::make_unique<GameScene>(game));
+        return;
     }
+
+    
     if (optionsButton.isClicked(w)) {
         game.scenes.push(std::make_unique<Options>(game));
+        return;
     }
+
+    // EXIT
     if (exitButton.isClicked(w)) {
         game.scenes.push(std::make_unique<ConfirmExit>(game));
+        return;
     }
+
+    (void)dt; 
 }
 
-void MenuScene::draw(sf::RenderWindow& window) {
+void MenuScene::draw(sf::RenderWindow& window)
+{
     window.draw(title);
+
     playButton.draw(window);
     optionsButton.draw(window);
     exitButton.draw(window);

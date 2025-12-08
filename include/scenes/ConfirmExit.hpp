@@ -12,7 +12,7 @@ public:
     void draw(sf::RenderWindow& window) override;
 
 private:
-    sf::Text question;
+    sf::Text title;
 
     Button yesBtn;
     Button noBtn;

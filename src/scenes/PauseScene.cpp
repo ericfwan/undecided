@@ -32,6 +32,14 @@ void PauseScene::handleEvent(sf::Event& event)
 {
     auto& w = game.window;
 
+    // ESC while paused should resume
+    if (event.type == sf::Event::KeyPressed &&
+        event.key.code == sf::Keyboard::Escape)
+    {
+        game.scenes.pop();
+        return;
+    }
+
     resumeBtn.handleEvent(event, w);
     restartBtn.handleEvent(event, w);
     quitBtn.handleEvent(event, w);
@@ -46,20 +54,22 @@ void PauseScene::update(float dt)
     quitBtn.update(w);
 
     if (resumeBtn.isClicked(w)) {
-        game.scenes.pop(); // back to gameplay
+        game.scenes.pop();
+        return;
     }
+    
+ if (restartBtn.isClicked(w)) {
+    game.scenes.requestReplaceRoot(std::make_unique<GameScene>(game));
+    return;
+}
 
-    if (restartBtn.isClicked(w)) {
-        game.scenes.pop();                 // remove pause
-        game.scenes.pop();                 // remove game
-        game.scenes.push(std::make_unique<GameScene>(game));
-    }
+if (quitBtn.isClicked(w)) {
+    game.scenes.requestReplaceRoot(std::make_unique<MenuScene>(game));
+    return;
+}
 
-    if (quitBtn.isClicked(w)) {
-        game.scenes.pop();                 // remove pause
-        game.scenes.pop();                 // remove game
-        game.scenes.push(std::make_unique<MenuScene>(game));
-    }
+
+
 }
 
 void PauseScene::draw(sf::RenderWindow& window)

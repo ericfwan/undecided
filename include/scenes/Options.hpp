@@ -30,11 +30,10 @@ private:
     Button bgLime;
     Button bgCyan;
 
-    // Save + Back
+    // Save then Back
     Button saveBtn;
     Button backBtn;
 
-    // Active selections
     sf::Color selectedBallColor;
     sf::Color selectedBgColor;
 };
