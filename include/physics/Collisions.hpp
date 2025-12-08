@@ -7,13 +7,16 @@ namespace Physics {
     class RigidBody;
     class Collisions {
     public:
-        Collisions(sf::Vector2f gravity = {0.0f, 980.f})
-            : gravity(gravity) {}
+
+
+
+        explicit Collisions(const sf::Vector2f gravity = {0.0f, 980.f}, const float bounceFactor = 10.f)
+            : gravity(gravity), bounceFactor(bounceFactor){}
 
         struct CollisionInfo {
-            RigidBody* other;           // The other body involved
+            RigidBody* other{};           // The other body involved
             sf::Vector2f normal;        // Collision normal (direction)
-            float penetration;          // How deep the overlap is
+            float penetration{};          // How deep the overlap is
         };
 
         struct AABB {
@@ -26,12 +29,18 @@ namespace Physics {
             }
         };
 
-        sf::Vector2f get_Gravity() const;
 
+
+        sf::Vector2f get_Gravity() const;
+        float bounceFactor;
+        void checkCollisions(std::vector<RigidBody*>& bodies);
 
     private:
 
         sf::Vector2f gravity;
+        bool checkAABB(RigidBody* a, RigidBody* b);
+        void resolveBallCollision(RigidBody* ball, RigidBody* other);
+
 
 
     };

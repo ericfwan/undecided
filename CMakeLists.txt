@@ -22,6 +22,10 @@ add_executable(undecided
         src/physics/RigidBody.cpp
         include/scenes/Renderer.hpp
         src/scenes/Renderer.cpp
+        include/physics/Controller.hpp
+        src/physics/Controller.cpp
+        include/physics/Entities.hpp
+        src/physics/Entities.cpp
 )
 
 

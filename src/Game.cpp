@@ -7,9 +7,6 @@ Game::Game()
 {
     window.setFramerateLimit(60);
 
-    // ❌ REMOVE THIS — NeonBackground has no resize() function anymore
-    // background.resize(window.getSize());
-
     scenes.push(std::make_unique<MenuScene>(*this));
 }
 

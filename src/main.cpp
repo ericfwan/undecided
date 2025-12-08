@@ -1,4 +1,5 @@
 #include "Game.hpp"
+#include "physics/Controller.hpp"
 
 /**int main() {
     Game game;
@@ -17,15 +18,30 @@ int main() {
     window.setFramerateLimit(60);
 
     Renderer renderer;
+    Controller controller;
+    Physics::Collisions collisionSystem;
 
 
-    auto rect = Physics::RigidBody({400.f, 500.f}, {150.f, 20.f});
-    auto ball = Physics::RigidBody({200.f, 300.f}, 30.f);
 
+    Physics::RigidBody platform({400.f, 500.f}, {75.f, 5.f});
+    Physics::RigidBody ball({200.f, 300.f}, 5.f);
+    Physics::RigidBody* platform_ptr = &platform;
 
-    std::vector<Physics::RigidBody*> activeObjects = { &rect, &ball };
+    controller.setPlatform(platform_ptr);
 
+    // Setup ball
+    ball.setOrigin();
+    ball.velocity = {150.f, 0.f};
+
+    // Optional colors
+    platform.setColour(sf::Color::White);
+    ball.setColour(sf::Color::Red);
+
+    std::vector<Physics::RigidBody*> activeObjects = { &platform, &ball };
+
+    sf::Vector2f gravity(0.f, 980.f);
     sf::Clock clock;
+
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -34,13 +50,15 @@ int main() {
 
         float dt = clock.restart().asSeconds();
 
-        // Update physics
-        for (auto& obj : activeObjects) {
-            obj->update(dt);
-        }
+        controller.update(dt, window.getSize().x, window.getSize().y);
+
+
+        // Physics updates
+
+        ball.update(dt);
 
         window.clear(sf::Color::Black);
-        renderer.render(window, activeObjects); // draw all objects
+        renderer.render(window, activeObjects);
         window.display();
     }
 
